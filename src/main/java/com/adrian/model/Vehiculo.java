@@ -32,5 +32,9 @@ public abstract class Vehiculo {
     public TipoVehiculo getTipoVehiculo() {
         return tipoVehiculo;
     }
+
+    public void registrarIngreso() {
+        horaIngreso = LocalDateTime.now();
+    }
     
 }

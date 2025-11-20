@@ -1,16 +1,21 @@
 package com.adrian.view;
 
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import com.adrian.model.Carro;
+import com.adrian.repository.ParqueaderoDatos;
 import com.adrian.service.GestorIngreso;
 
 public class MenuConsole {
     Scanner scan;
     GestorIngreso gIngreso;
+    ParqueaderoDatos pDatos;
 
     public MenuConsole() {
         scan = new Scanner(System.in);
         gIngreso = new GestorIngreso();
+        pDatos = new ParqueaderoDatos();
     }
 
     public void iniciar() {
@@ -52,9 +57,20 @@ public class MenuConsole {
 
         if(gIngreso.registrarIngreso(placa)) {
             //Validar si existe en el sistema
+            if(pDatos.existePlaca(placa)){
+                pDatos.registrarIngreso(placa);
+                System.out.println("Vehículo registrado exitosamente.");
+            }
             // NO -> Registro
-        } else {
+            else {
+                Carro carrito = new Carro(placa, "x", LocalDateTime.now());
+                pDatos.guardar(carrito);
+
+                System.out.println("Vehículo registrado exitosamente.");
+            }
             
+        } else {
+            System.out.println("Error: La placa "+ placa + " ya esta dentro del Parqueadero.");
         }
 
     }
