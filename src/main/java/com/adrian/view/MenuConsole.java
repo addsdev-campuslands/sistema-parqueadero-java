@@ -6,16 +6,19 @@ import java.util.Scanner;
 import com.adrian.model.Carro;
 import com.adrian.repository.ParqueaderoDatos;
 import com.adrian.service.GestorIngreso;
+import com.adrian.service.GestorSalida;
 
 public class MenuConsole {
     Scanner scan;
     GestorIngreso gIngreso;
+    GestorSalida gSalida;
     ParqueaderoDatos pDatos;
 
     public MenuConsole() {
         scan = new Scanner(System.in);
         gIngreso = new GestorIngreso();
         pDatos = new ParqueaderoDatos();
+        gSalida = new GestorSalida(gIngreso);
     }
 
     public void iniciar() {
@@ -53,7 +56,7 @@ public class MenuConsole {
 
     private void opcionIngresarVehiculo() {
         System.out.println("--- NUEVO INGRESO ---");
-        String placa = leerTexto("Ingrese la Placa: ");
+        String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
 
         if(gIngreso.registrarIngreso(placa)) {
             //Validar si existe en el sistema
@@ -63,7 +66,8 @@ public class MenuConsole {
             }
             // NO -> Registro
             else {
-                Carro carrito = new Carro(placa, "x", LocalDateTime.now());
+                var modelo = leerTexto("Ingrese el modelo del Vehiculo con placa: "+placa);
+                Carro carrito = new Carro(placa, modelo, LocalDateTime.now());
                 pDatos.guardar(carrito);
 
                 System.out.println("Vehículo registrado exitosamente.");
@@ -76,6 +80,32 @@ public class MenuConsole {
     }
 
     private void opcionRegistrarSalida() {
+        System.out.println("--- NUEVA SALIDA ---");
+        String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
+
+        if(gSalida.validarSalida(placa)) {
+            try {
+                var total = gSalida.calcularCosto(pDatos.buscar(placa));
+                int pago = leerEntero("El vehiculo o paga: $ "+total+"\n1.\tSI\n0.\tNO");
+                if(pago < 1) {
+                    System.out.println("Error: al procesar el pago del vehiculo con placas: "+ placa);
+                    return;
+                }
+
+                ///PAAGOOOOOOOOO
+                gSalida.procesarSalida(placa);
+                System.out.println("Gracias por utilizarnos como ella uso el sistema.\nVehiculo con placas:"
+                 + placa + " Saliendoooooooo.");
+
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } 
+        else {
+            System.out.println("Error: La placa "+ placa + " NO esta dentro del Parqueadero.");
+        }
+        
 
     }
 
