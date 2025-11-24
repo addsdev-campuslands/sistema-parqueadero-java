@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import com.adrian.enums.TipoVehiculo;
 
-public abstract class Vehiculo {
+public abstract class Vehiculo implements Cloneable {
     private String placa;
     private String modelo;
-    private LocalDateTime horaIngreso;
+    protected LocalDateTime horaIngreso;
     private TipoVehiculo tipoVehiculo;
 
     public Vehiculo(String placa, String modelo, LocalDateTime horaIngreso, TipoVehiculo tipoVehiculo) {
@@ -36,5 +36,12 @@ public abstract class Vehiculo {
     public void registrarIngreso() {
         horaIngreso = LocalDateTime.now();
     }
-    
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        var newInstance = (Vehiculo) super.clone();
+        newInstance.horaIngreso = LocalDateTime.now();
+        return newInstance;
+    }
+
 }

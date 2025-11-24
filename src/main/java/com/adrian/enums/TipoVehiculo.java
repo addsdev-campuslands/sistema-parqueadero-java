@@ -8,6 +8,7 @@ public enum TipoVehiculo {
     CUATRIMOTO(4500,250000),
     SEDAN(4500, 250000),
     SUV(4500, 250000),
+    CAMION(5000, 270000),
     CAMIONETA(4500, 250000);
 
     private final double tarifaPorTiempo;

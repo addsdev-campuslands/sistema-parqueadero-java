@@ -50,6 +50,8 @@ public class GestorSalida {
         System.out.println("-------------------------");
     }
 
+    
+
     private String formatDuration(Duration duration) {
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
