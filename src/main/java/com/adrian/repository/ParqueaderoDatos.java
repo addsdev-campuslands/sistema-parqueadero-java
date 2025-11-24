@@ -11,11 +11,21 @@ import com.adrian.model.Vehiculo;
 
 public class ParqueaderoDatos {
 
+    private static ParqueaderoDatos instancia;
+
     private final Set<String> placas = new HashSet<>();
 
     private final Map<String, Vehiculo> mapaPlacas = new HashMap<>();
 
-    public ParqueaderoDatos() {
+    public static ParqueaderoDatos getInstance() {
+        if(instancia == null) {
+            instancia = new ParqueaderoDatos();
+        }
+
+        return instancia;
+    }
+
+    private ParqueaderoDatos() {
         placas.add("ABC123");
         placas.add("ABC124");
         placas.add("ABC125");

@@ -17,7 +17,7 @@ public class MenuConsole {
     public MenuConsole() {
         scan = new Scanner(System.in);
         gIngreso = new GestorIngreso();
-        pDatos = new ParqueaderoDatos();
+        pDatos = ParqueaderoDatos.getInstance();
         gSalida = new GestorSalida(gIngreso);
     }
 
@@ -60,7 +60,7 @@ public class MenuConsole {
 
         if(gIngreso.registrarIngreso(placa)) {
             //Validar si existe en el sistema
-            if(pDatos.existePlaca(placa)){
+            if(ParqueaderoDatos.getInstance().existePlaca(placa)){
                 pDatos.registrarIngreso(placa);
                 System.out.println("Vehículo registrado exitosamente.");
             }
@@ -68,7 +68,8 @@ public class MenuConsole {
             else {
                 var modelo = leerTexto("Ingrese el modelo del Vehiculo con placa: "+placa);
                 Carro carrito = new Carro(placa, modelo, LocalDateTime.now());
-                pDatos.guardar(carrito);
+                //pDatos == ParqueaderoDatos.getInstance()
+                ParqueaderoDatos.getInstance().guardar(carrito);
 
                 System.out.println("Vehículo registrado exitosamente.");
             }
