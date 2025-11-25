@@ -5,13 +5,13 @@ import java.util.Scanner;
 import com.adrian.enums.TipoVehiculo;
 import com.adrian.service.ParqueaderoFacade;
 
-public class MenuConsole implements IValidarPago {
+public class MenuConsole implements IValidarPago, IValidarTipo {
     Scanner scan;
     ParqueaderoFacade facade;
 
     public MenuConsole() {
         scan = new Scanner(System.in);
-        facade = new ParqueaderoFacade(this);
+        facade = new ParqueaderoFacade(this, this);
     }
 
     public void iniciar() {
@@ -50,22 +50,7 @@ public class MenuConsole implements IValidarPago {
     private void opcionIngresarVehiculo() {
         System.out.println("--- NUEVO INGRESO ---");
         String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
-
-        if (!facade.validarIngreso(placa)) {
-            System.out.println("Error: La placa " + placa + " ya esta dentro del Parqueadero.");
-            return;
-        }
-
-        if (!facade.validarCliente(placa)) {
-            // Nevo cliente
-            var modelo = leerTexto("Ingrese el modelo del Vehiculo con placa: " + placa);
-            var tipo = mostrarCategorias();
-            System.out.println(facade.registrarIngreso(placa, modelo, tipo));
-        } else {
-            // Ya es cliente
-            System.out.println(facade.registrarIngreso(placa));
-        }
-
+        System.out.println(facade.registrarIngreso(placa));
     }
 
     private int mostrarCategorias() {
@@ -81,11 +66,6 @@ public class MenuConsole implements IValidarPago {
     private void opcionRegistrarSalida() {
         System.out.println("--- NUEVA SALIDA ---");
         String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
-        if(!facade.validarSalida(placa)) {
-            System.out.println("Error: La placa " + placa + " NO esta dentro del Parqueadero.");
-            return;
-        }
-
         System.out.println(facade.procesarSalida(placa));;
     }
 
@@ -111,6 +91,16 @@ public class MenuConsole implements IValidarPago {
     @Override
     public int validarPago(double total) {
         return leerEntero("El vehiculo paga: $ " + total + "\n1.\tSI\n0.\tNO");
+    }
+
+    @Override
+    public int seleccionarTipoVehiculo() {
+        return mostrarCategorias();
+    }
+
+    @Override
+    public String seleccionarModelo(String placa) {
+        return leerTexto("Ingrese el modelo del Vehiculo con placa: " + placa);
     }
 
 }
