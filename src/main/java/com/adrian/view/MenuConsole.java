@@ -3,18 +3,15 @@ package com.adrian.view;
 import java.util.Scanner;
 
 import com.adrian.enums.TipoVehiculo;
-import com.adrian.repository.ParqueaderoDatos;
-import com.adrian.service.GestorIngreso;
-import com.adrian.service.GestorSalida;
 import com.adrian.service.ParqueaderoFacade;
 
-public class MenuConsole {
+public class MenuConsole implements IValidarPago {
     Scanner scan;
     ParqueaderoFacade facade;
 
     public MenuConsole() {
         scan = new Scanner(System.in);
-        facade = new ParqueaderoFacade();
+        facade = new ParqueaderoFacade(this);
     }
 
     public void iniciar() {
@@ -84,28 +81,12 @@ public class MenuConsole {
     private void opcionRegistrarSalida() {
         System.out.println("--- NUEVA SALIDA ---");
         String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
-
-        if (gSalida.validarSalida(placa)) {
-            try {
-                var total = gSalida.calcularCosto(pDatos.buscar(placa));
-                int pago = leerEntero("El vehiculo o paga: $ " + total + "\n1.\tSI\n0.\tNO");
-                if (pago < 1) {
-                    System.out.println("Error: al procesar el pago del vehiculo con placas: " + placa);
-                    return;
-                }
-
-                /// PAAGOOOOOOOOO
-                gSalida.procesarSalida(placa);
-                System.out.println("Gracias por utilizarnos como ella uso el sistema.\nVehiculo con placas:"
-                        + placa + " Saliendoooooooo.");
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        } else {
+        if(!facade.validarSalida(placa)) {
             System.out.println("Error: La placa " + placa + " NO esta dentro del Parqueadero.");
+            return;
         }
 
+        System.out.println(facade.procesarSalida(placa));;
     }
 
     // Utilidades
@@ -125,6 +106,11 @@ public class MenuConsole {
     private String leerTexto(String msg) {
         System.out.println(msg);
         return scan.nextLine().trim().toLowerCase();
+    }
+
+    @Override
+    public int validarPago(double total) {
+        return leerEntero("El vehiculo paga: $ " + total + "\n1.\tSI\n0.\tNO");
     }
 
 }

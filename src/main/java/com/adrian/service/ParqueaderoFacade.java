@@ -3,21 +3,28 @@ package com.adrian.service;
 import com.adrian.factory.VehiculoFactory;
 import com.adrian.model.Vehiculo;
 import com.adrian.repository.ParqueaderoDatos;
+import com.adrian.view.IValidarPago;
 
 public class ParqueaderoFacade {
 
     private final GestorIngreso gIngreso;
     private final GestorSalida gSalida;
     private final ParqueaderoDatos db;
+    private final IValidarPago onValidPayment;
 
-    public ParqueaderoFacade() {
+    public ParqueaderoFacade(IValidarPago onValidPayment) {
         gIngreso = new GestorIngreso();
         gSalida = new GestorSalida(gIngreso);
         db = ParqueaderoDatos.getInstance();
+        this.onValidPayment = onValidPayment;
     }
 
     public boolean validarIngreso(String placa) {
         return gIngreso.registrarIngreso(placa);
+    }
+
+    public boolean validarSalida(String placa) {
+        return gSalida.validarSalida(placa);
     }
 
     public boolean validarCliente(String placa) {
@@ -25,9 +32,7 @@ public class ParqueaderoFacade {
     }
 
     public String registrarIngreso(String placa, String modelo, int tipo) {
-        if (!gIngreso.registrarIngreso(placa)) {
-            return "Error: No se puede registrar el ingreso";
-        }
+        gIngreso.registrarIngreso(placa);
 
         if (db.existePlaca(placa)) {
             return "Error: El vehiculo no esta registrado en nuestro sistema";
@@ -38,10 +43,10 @@ public class ParqueaderoFacade {
             db.guardar(vehiculo);
 
             return "Vehículo registrado exitosamente.";
-        }catch (Exception e) {
+        } catch (Exception e) {
             return e.getMessage();
         }
-        
+
     }
 
     public String registrarIngreso(String placa) {
@@ -58,7 +63,21 @@ public class ParqueaderoFacade {
         return "Vehículo registrado exitosamente.";
     }
 
-    public void procesarSalida(String placa) {
+    public String procesarSalida(String placa) {
+        try {
+            var total = gSalida.calcularCosto(db.buscar(placa));
+            int pago = onValidPayment.validarPago(total);
+            if (pago < 1) { 
+                return "Error: al procesar el pago del vehiculo con placas: " + placa;
+            }
 
+            /// PAAGOOOOOOOOO
+            gSalida.procesarSalida(placa);
+            return "Gracias por utilizarnos como ella uso el sistema.\nVehiculo con placas:"
+                    + placa + " Saliendoooooooo.";
+
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }
