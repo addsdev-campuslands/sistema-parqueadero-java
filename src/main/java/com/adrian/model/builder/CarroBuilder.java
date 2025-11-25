@@ -2,20 +2,17 @@ package com.adrian.model.builder;
 
 import java.time.LocalDateTime;
 
-import com.adrian.enums.TipoVehiculo;
 import com.adrian.model.Carro;
 import com.adrian.model.Vehiculo;
 
 public class CarroBuilder implements VehiculoBuilder {
     private String placa, modelo;
     private LocalDateTime horaIngreso;
-    private TipoVehiculo tipo;
 
     public CarroBuilder() {
         placa = "NNN000";
         modelo = "2000";
         horaIngreso = LocalDateTime.now();
-        tipo = TipoVehiculo.SEDAN;
     }
 
     @Override

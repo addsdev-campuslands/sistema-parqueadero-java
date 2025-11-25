@@ -3,24 +3,18 @@ package com.adrian.view;
 import java.util.Scanner;
 
 import com.adrian.enums.TipoVehiculo;
-import com.adrian.factory.VehiculoFactory;
-import com.adrian.model.Carro;
-import com.adrian.model.Vehiculo;
 import com.adrian.repository.ParqueaderoDatos;
 import com.adrian.service.GestorIngreso;
 import com.adrian.service.GestorSalida;
+import com.adrian.service.ParqueaderoFacade;
 
 public class MenuConsole {
     Scanner scan;
-    GestorIngreso gIngreso;
-    GestorSalida gSalida;
-    ParqueaderoDatos pDatos;
+    ParqueaderoFacade facade;
 
     public MenuConsole() {
         scan = new Scanner(System.in);
-        gIngreso = new GestorIngreso();
-        pDatos = ParqueaderoDatos.getInstance();
-        gSalida = new GestorSalida(gIngreso);
+        facade = new ParqueaderoFacade();
     }
 
     public void iniciar() {
@@ -60,40 +54,19 @@ public class MenuConsole {
         System.out.println("--- NUEVO INGRESO ---");
         String placa = leerTexto("Ingrese la Placa: ").toUpperCase();
 
-        if (gIngreso.registrarIngreso(placa)) {
-            // Validar si existe en el sistema
-            if (ParqueaderoDatos.getInstance().existePlaca(placa)) {
-                pDatos.registrarIngreso(placa);
-                System.out.println("Vehículo registrado exitosamente.");
-            }
-            // NO -> Registro
-            else {
-                var modelo = leerTexto("Ingrese el modelo del Vehiculo con placa: " + placa);
-                var tipo = mostrarCategorias();
-                try {
-                    Vehiculo vehiculo = VehiculoFactory.crearVehiculo(tipo, placa, modelo);
-                    if (vehiculo instanceof Carro) {
-                        var carro = (Carro) vehiculo;
-                        var carro2 = carro.clone();
-
-                        System.out.println(carro.getHoraIngreso().toString());
-                        System.out.println(((Carro) carro2).getHoraIngreso().toString());
-                    }
-                    // Carro carrito = new Carro(placa, modelo, LocalDateTime.now());
-                    // pDatos == ParqueaderoDatos.getInstance()
-                    ParqueaderoDatos.getInstance().guardar(vehiculo);
-
-                    System.out.println("Vehículo registrado exitosamente.");
-                } catch (CloneNotSupportedException e) {
-                    System.out.println(e.getMessage());
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-
-            }
-
-        } else {
+        if (!facade.validarIngreso(placa)) {
             System.out.println("Error: La placa " + placa + " ya esta dentro del Parqueadero.");
+            return;
+        }
+
+        if (!facade.validarCliente(placa)) {
+            // Nevo cliente
+            var modelo = leerTexto("Ingrese el modelo del Vehiculo con placa: " + placa);
+            var tipo = mostrarCategorias();
+            System.out.println(facade.registrarIngreso(placa, modelo, tipo));
+        } else {
+            // Ya es cliente
+            System.out.println(facade.registrarIngreso(placa));
         }
 
     }
