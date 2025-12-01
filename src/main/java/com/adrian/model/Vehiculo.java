@@ -1,10 +1,11 @@
 package com.adrian.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.adrian.enums.TipoVehiculo;
 
-public abstract class Vehiculo implements Cloneable {
+public abstract class Vehiculo implements Cloneable, Serializable {
     private String placa;
     private String modelo;
     protected LocalDateTime horaIngreso;

@@ -8,9 +8,11 @@ import com.adrian.model.Vehiculo;
 public class GestorSalida {
 
     private IValidator vIValidator;
+    private ServicioFacturacion sFacturacion;
 
     public GestorSalida(IValidator vIValidator) {
         this.vIValidator = vIValidator;
+        sFacturacion = new ServicioFacturacion();
     }
 
     public double calcularCosto(Vehiculo vehiculo) throws Exception {
@@ -35,7 +37,6 @@ public class GestorSalida {
         double totalAPagar = vehiculo.getTipoVehiculo().getTarifaPorTiempo() * horasACobrar;
 
         mostrarRecibo(vehiculo, duracion, horasACobrar, vehiculo.getTipoVehiculo().getTarifaPorTiempo(), totalAPagar);
-
         return totalAPagar;
     }
 
@@ -48,6 +49,7 @@ public class GestorSalida {
         System.out.println("Tarifa x Hora: $" + tarifaHora);
         System.out.println("Total a Pagar: $" + totalPagar);
         System.out.println("-------------------------");
+        sFacturacion.facturar(vehiculo, vehiculo.getPlaca(), totalPagar, horasACobrar);
     }
 
     
