@@ -38,6 +38,10 @@ public abstract class Vehiculo implements Cloneable, Serializable {
         horaIngreso = LocalDateTime.now();
     }
 
+    public void registrarSalida() {
+        horaIngreso = LocalDateTime.now();
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         var newInstance = (Vehiculo) super.clone();
